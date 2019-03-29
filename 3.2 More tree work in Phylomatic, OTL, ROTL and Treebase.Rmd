@@ -161,7 +161,7 @@ resolved_names
 ```
 
 It's always a good idea to check that the resolved names match what you intended:
-
+ 
 The column unique_name sometimes indicates the higher taxonomic level associated with the name. So, for example, these are four animals identified by genus name. Hyla, Salmo, Diadema and Nautilus are all generic names, but for the genus Diadema the OTT ID being returned is for Nucletmycea, which is a fungus. 
 
 The intention here is to search for the sea urchin Diadema. 
