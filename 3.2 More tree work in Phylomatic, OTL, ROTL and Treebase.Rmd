@@ -53,8 +53,10 @@ oleaceae/Jasminum
 melastomataceae/Tibouchina
 araceae/Amorphophallus
 poaceae/Saccharum
+# species/Genus
 
 Under "outformat" the default output, Newick, is what you want. 
+# newick as: "Genus species", ...
 
 ## Different stored trees in BRRANCHING -- details of the command tree_phylomatic
 
@@ -64,7 +66,7 @@ What if you wanted to access the slik2015 or zanne2014 tree when working in R, i
 taxa<-c("Punica", "Theobroma", "Neomarica", "Aechmea", "Solandra", "Grevillea", "Jasminum", "Tibouchina", "Amorphophallus", "Saccharum")
 tree_R20120829 <- phylomatic(taxa = taxa, get = 'POST')
 tree_zanne2014 <- phylomatic(taxa = taxa, storedtree ="zanne2014", get = 'POST')
-plot(tree_R20120829, no.margin = TRUE)
+plot(tree_R20120829, no.margin = TRUE) 
 plot(tree_zanne2014, no.margin = TRUE)
 
 default_fn = "tree_phylomatic_R20120829"
@@ -73,8 +75,24 @@ write.tree(tree_R20120829, file=default_fn)
 default_fn = "tree_phylomatic_zanne2014"
 write.tree(tree_zanne2014, file=default_fn)
 
+## NOTES: 
+
+## to construct:
+## 1. make taxa list using "<-c()"
+## 2. phylomatic command to compile tree (here, can choose what tree its compared to)
+## 3. draw/plot using "plot" command
+
+## different trees for comparisom produce 2 very different tree outputs 
+
 ```
 How do these two trees compare? Do they show the same relationships among taxa and clades? Is something else different? (Hint: compare lengths of branches within and between trees.)
+# SAME: 
+# - the first separation groups are the same (neomarica, aechmea, saccharum, and amorpophallus) versus the rest
+# - grouping of (neomarica, aechmea, saccharum, and amorpophallus) in both trees
+
+# DIFF: branch length is diffeernt between the two trees as well 
+# - orering of ends (one chart orders them temporally in a vertical way, and the other doesnt)
+# - lenths of the branches (inclusion of timing of diverbende (horizontal time component))
 
 
 ## Open Tree of Life and the ROTL Package
@@ -138,6 +156,8 @@ library(rotl)
 taxa <- c("Hyla", "Salmo", "Diadema", "Nautilus")
 resolved_names <- tnrs_match_names(taxa)
 resolved_names
+
+## each show a ott_id
 ```
 
 It's always a good idea to check that the resolved names match what you intended:
@@ -155,6 +175,8 @@ To ensure that our search is limited to animal names, we could do:
 taxa <- c("Hyla", "Salmo", "Diadema", "Nautilus")
 resolved_names <- tnrs_match_names(taxa, context_name = "Animals")
 resolved_names
+
+# specify with "Animals" >> diff ID 
 ```
 
 
@@ -199,11 +221,15 @@ Now that we have the correct ott_id for a list of taxa, we can ask for the tree 
 my_tree <- tol_induced_subtree(ott_ids = resolved_names$ott_id)
 plot(my_tree, no.margin=TRUE)
 
+## produces tree with 4 animals - check  
+
 ```
 
 ```{r}
 my_Ptree <- tol_induced_subtree(ott_ids = P_resolved_names$ott_id)
 plot(my_Ptree, no.margin=TRUE)
+
+## tree with all plants
 
 ```
 
@@ -286,6 +312,8 @@ pdffn = "tr2_plants.pdf"
 pdf(file=pdffn)
 plot(tr2_plants, type="unrooted", edge.width=5, edge.color="blue", lab4ut="axial")
 dev.off()
+
+## line 313 having trouble running ? tr2_plants not found - never defined bu not sure whre is should be in the code 
 ```
 
 
@@ -321,10 +349,39 @@ write.tree(tr2_plants, file=newick_fn)
 
 
 ```{r}
+library(rotl)
+taxa <- c("Abies", "Ailanthus", "Begonia", "Berberis", "Betula", "Chenopodium", "Clematis", "Dahlia", "Dracaena", "Equisetum", "Euonymus", "Euphorbia", "Fagus")
+resolved_names <- tnrs_match_names(taxa)
+resolved_names
+
+my_tree <- tol_induced_subtree(ott_ids = resolved_names$ott_id)
+plot(my_tree, no.margin=TRUE)
 
 ```
 
 2. You've developed your own lists of plants to resolve and phylogenize. Use it to Get a phylogeny from OTT.
+
+```{r}
+# tree for the firts 10 plants from my list of "daily plants" in portfolio 2 
+
+Ptaxa <- c("Musa acuminata",
+"Malus pumila",
+"Oryza sativa",
+"Camellia sinesnsis",
+"Zea mays",
+"Saccharum officinarum",
+"Hordeum vulgare",
+"Theobroma cacao",
+"Stevia rebaudiana",
+"Vanilla planifolia")
+P_resolved_names <- tnrs_match_names(Ptaxa)
+in_tree <- is_in_tree(ott_id(P_resolved_names))
+in_tree
+
+my_Ptree <- tol_induced_subtree(ott_ids = P_resolved_names$ott_id)
+plot(my_Ptree, no.margin=TRUE)
+
+```
 
 
 #### More Information - the ROTL Vignette and FAQ
