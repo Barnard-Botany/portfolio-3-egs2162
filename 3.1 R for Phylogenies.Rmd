@@ -35,11 +35,11 @@ Often you are downloading packages from what's called a "CRAN Repository" with C
 It is also possible to download R Packages from GitHub repositories if you have a package called "devtools" installed in R Studio. That's how we are downloading the package called "brranching" which is part of a project known as R Open Science (https://ropensci.org/)
 
 ```{r}
-#install.packages(ape)
-#install.packages("devtools")
-#devtools::install_github("ropensci/brranching")
+install.packages(ape)
+install.packages("devtools") # have to download then load to use 
+devtools::install_github("ropensci/brranching") # using devtool to install this from r repostory
 library("ape")
-#library("brranching")
+library("brranching")
 ```
 
 ##Phylogenies
@@ -79,6 +79,13 @@ Here's a way to access the help menu for some documentation about what these com
 What is the difference between regular plot and the command below, if any?
 ```{r}
 ?plot.phylo
+
+plot.phylo(tr_primates)
+plot(tr_primates)
+
+# plots appear identical when plotted
+# but phylo with more specifics // plot more generic (just plug in x,y)
+# diff in arguments to put in 
 ```
 
 
@@ -98,14 +105,54 @@ attributes(tr_primates)
 
 names(tr_primates) 
 
+
 Generate output, and then write brief notes about the information you are given by submitting these commands.  
+
+``` {r}
+
+tr_primates 
+# describes what it is (phyogenetic tree) and how many/type of each notde
+# gives the laels of each tip - that is each of the species listed in the tree
+
+str("tr_primates")
+# outupts the name of the list/file (?): chr "tr_primates" 
+
+str(tr_primates)
+# it seems this gives data on the eduges - where/how the branching is structured
+# too it tells how many (internal) nodes there are
+# to it tells the names of the tips (species in tree)
+# it gives 2 attributes (class and order) 
+
+attributes(tr_primates)
+# gives the name, class and order of the file - in a way easier to read than the str()
+# all the attributes of the file (describes organization and type info it contains)
+
+names(tr_primates) 
+# lists the "edge", "Nnode", and "tip.label"
+# edge may describe the number of branches? (including those that are internal) - links between nodes
+
+```
 
 There are many trees that can be drawn to show relationships of four taxa. Some have the same topology and simply re-arrange the placement of taxa on the tips. Others differ in the topology that connects tips to internal nodes. Among the many possibilities, many are inconsistent or non-parsimonious with respect to  available data used for inferring phylogenies. Typically fewer will be consistent and parsimoneous, sometimes one will be uniquely best to fit the data. 
 
 To finish up Mini-Exercise 1, write new code with a new Newick string variable, read the string using read.tree, and plot it. The goal is to generate a four-taxon tree with a new topology. It will be an erroneous tree, depicting relationships that contradict today's biological knowledge. That's okay; this is just an exercise.
 
+```{r}
+newick_str = "(((House Cat, Lion), House Dog), Elephant);"
+tr_new = read.tree(text=newick_str)
+ 
+plot.phylo(tr_new)
+
+## Mini-Excercise 1
+emily_str = "((Caterpillar, Snake),(Rhino, Mouse), Orangutang);"
+tr2 = read.tree(text=emily_str)
+ 
+plot.phylo(tr2)
+
+```
+
 #### Overall message about phylogenies
-Phylogenies have tips, nodes and edges. Nodes are ancestors to tips. Tips and edges are connected by nodes. Also, reecent or derived nodes can  connect to older or ancestral nodesThe details of how tips and nodes connect (via edges) is dictate by the newick code. 
+Phylogenies have tips, nodes and edges. Nodes are ancestors to tips. Tips and edges are connected by nodes. Also, reecent or derived nodes can  connect to older or ancestral nodes. The details of how tips and nodes connect (via edges) is dictate by the newick code. 
 
 This is technical but basic jargon. What is complex and rich is the biological and evolutionary meaning in this framework, important for understanding conservation, ethnobotany, ecology, conservation, ethnobotany or crop breeding, and evolutionary processes such as migration, hybridization, speciation or extinction. 
 
@@ -124,11 +171,13 @@ plot(tr_plants)
 ```
 
 If it was hard to see relationships in the NewicK format, is it easier in this plotted tree format? Here are more resources if you feel like you need more help to review plant diversity or phylogenetics. 
+# yes - a good visual represetnation, however I dont mind the Newick format for long lists either
 
 https://www.ebi.ac.uk/training/online/course/introduction-phylogenetics
 https://en.wikipedia.org/wiki/APG_IV_system
 
 Is the phylogeny below better for these four taxa? and why or why not? (Can you tell directly from the Newick)?
+# you can see the different categorizations by just looking at the code, but it doesnt indicate which is better in a sense of accuaty phylogenteic categorization - that I'll have to look up online (yes its better than the first - cabage and kale are closely related)
 
 ```{r}
 newick_str = "(Wheat,(Corn,(Cabbage, Kale)));"
@@ -144,6 +193,36 @@ plot(tr2_plants)
 a. Explain what's wrong in your erroneous tree and how you've corrected the error in the other tree. .
 b. Use commands such as "str" or "attribute" and comment about whether your erroneous and correct tree differ in tips, Nnodes, or edges. 
 
+``` {r}
+## Excersize 2
+
+## (1)
+newick_str = "((Escholzia californica, Lupinus bicolor),(Alra caryophyll,(Vromus diandrus, Bromus tectorum)));"
+tr2_plants_new = read.tree(text=newick_str)
+plot(tr2_plants_new)
+
+
+## (2)
+# A)
+newick_str_correct = "((((Human, Mouse), Housefly), Radish, Sequoia), Gut Bacteria);"
+newick_str_erroneous = "((((Human, Gut Bacteria), Radish, Horsefly), Mouse), Sequoia);" 
+# problem wiht this tree: places the organisms way out of order (human and horsefly are the furthest apart - not closest); in the correct tree, they're categorized/grouped based on how similar they are (radish/sequoia placement may be lumped wrong)
+
+tr_new_correct = read.tree(text=newick_str_correct)
+tr_new_erroneous = read.tree(text=newick_str_erroneous)
+
+plot.phylo(tr_new_correct)
+plot.phylo(tr_new_erroneous)
+
+# B) 
+str(tr_new_correct)
+str(tr_new_erroneous)
+# differ in edges (1:10 vs 1:9), number of nodes (5 vs 4)
+# diff in edges and nodes likely due to the fact that I split sequoia and radish in the same line for the "correct" tree but not in the "erroneous"
+# the labels are in differnt orders (what I would hav assumed considering the two trees group organisms differently)
+
+```
+
 ## Branching order and branching lengths
 
 Returning to the original tree, What was added to the tree and the plot of the tree?
@@ -155,6 +234,7 @@ plot(tr_primate)
 ```
 
 What was added to the tree and the plot of the tree?
+# A: node labels ! 
 
 ```{r}
 newick_str = "(((Humans:6.0, Chimps:6.0)LCA_humans_chimps:1.0, Gorillas:7.0)LCA_w_gorillas:1.0, Orangs:8.0)LCA_w_orangs:1.0;"
@@ -169,9 +249,13 @@ tr_primate
 In November 2017, scientists discovered that there are two Orang species, the known species Pongo abelii and the new species Pongo tapanuliensis. The two taxa are estimated to have separated about 3.5 million years ago. How would you modify the Newick portion of code above to show that there are two species? 
 
 ```{r}
-newick_str = "(((Humans:12.5, Chimps:12.5):1.0, Gorillas:14.0):1.0, Orangs:14.5):1.0;"
+## Exercise 3
+
+newick_str = "(((Humans:12.5, Chimps:12.5):1.0, Gorillas:14.0):1.0, (Orangs:14.5, Orangs2)):1.0;"
 tr_primate = read.tree(text=newick_str)
 plot(tr_primate)
+
+## added () and "Orangs2" into the code to group Orangs and Organgs2
 ```
 
 ## Displaying Phylogenies
@@ -238,7 +322,7 @@ layout(matrix(1, 1))
 The code below shows you can ladderize (and what ladderizing is - arranging sub-clades in order of size, which size referring to the number of taxa in the sub-clade)
 
 ```{r}
-layout(matrix(1:4, 2, 2))
+layout(matrix(1:2, 1, 2))
 plot(tr_primate, main = "normal", type = "phylogram", direction = c("upwards"))
 plot(ladderize(tr_primate), main = "right-ladderized", direction = c("upwards"))
 plot(ladderize(tr_primate, FALSE), main = "left-ladderized", direction=c("upwards"))
@@ -248,6 +332,27 @@ layout(matrix(1, 1))
 ### MINI EXERCISE 4
 
 Practice a few of these data display techniques using the six-taxon phylogeny that includes cabbage, kale, corn and wheat, plus radish and sequoia.
+
+```{r}
+## Exercise 4
+
+newick_str = "(((cabage, kale), radish), (corn, wheat), sequoia);"
+tr_plants = read.tree(text=newick_str)
+plot(tr_plants)
+
+# upwards
+plot(tr_plants, type="phylogram", direction="upwards")
+
+# radial plot
+plot(tr_plants, type="radial")
+
+# right and left ladderalized in a matrix
+layout(matrix(1:2, 1, 2))
+plot(ladderize(tr_plants, FALSE), main = "left-ladderized and downwards", direction = c("downwards"))
+plot(ladderize(tr_plants, FALSE), main = "right-ladderized and upwards", direction = c("upwards"))
+
+
+```
 
 ### SAVING FILES: important for reproducing trees later
 
@@ -259,7 +364,7 @@ This will store the new file in your working directory. You may want to then mak
 
 ```{r}
 newick_fn = "tr2_plants"
-write.tree(tr2_plants, file=tr2_plants)
+write.tree(tr2_plants, file=newick_fn)
 ```
 
 ```{r}
@@ -344,6 +449,9 @@ During lab, I'll explain to you about the reference data and procedures being us
 
 ```{r}
 tree_phylomatic <- phylomatic(taxa = taxa, storedtree ="R20120829", get = 'POST')
+# number is default (rep of a stored tree that we are referencing)
+# get = 'POST' to look up and resolve each species and refrence to stored tree and then put into newick string
+
 plot(tree_phylomatic, no.margin = TRUE)
 ```
 
@@ -426,7 +534,7 @@ Here is another example of a tree with variable branch lengths.
 ```{r}
 spp1 <- c("Abies_nordmanniana", "Abies_bornmuelleriana", "Abies_cilicica", "Abies_cephalonica",
 "Abies_numidica", "Abies_pinsapo", "Abies_alba", "Ginkgo biloba", "Nymphaea lotus", "Illicium mexicanum", "Magnolia fraseri","Lindera pulcherrima")
-tree_phylomatic <- phylomatic(taxa = taxa, storedtree ="zanne2014", get = 'POST')
+tree_phylomatic <- phylomatic(taxa = spp1, storedtree ="zanne2014", get = 'POST')
 plot(tree_phylomatic, no.margin = TRUE)
 ```
 
@@ -434,6 +542,7 @@ plot(tree_phylomatic, no.margin = TRUE)
 Here's an example of this type of data phylogenized: lists of species from Emily Gregory's anatomy textbook. 
 
 ```{r}
+# genus list
 EG<-c("Abies",
 "Ailanthus",
 "Aspicllum",
@@ -525,6 +634,8 @@ tree_phylomatic_EG2 <- phylomatic(taxa = EG, storedtree ="zanne2014", get = 'POS
 plot(tree_phylomatic_EG2, no.margin = TRUE, type="cladogram")
 newick_fn5 = "tree_phylomatic_EG2"
 write.tree(tree_phylomatic_EG2, file=newick_fn5)
+
+# EG1 and EG2 processed against diff trees 
 ```
 
 #### MINI-EXERCISE 5
@@ -538,6 +649,20 @@ Do and write up notes about two things:
 
 3. Lastly, look at the output and you'll see that many taxa were excluded. Try looking them up in EOL or Wikipedia. Why was it difficult to include them? What does this say about the history of botany? Are there some things that were excluded that should not have been excluded.  
 
+```{r}
+# 1. plotteing as phylograms and radial charts
+layout(matrix(1:4, 2, 2))
+plot(tree_phylomatic_EG1, no.margin = TRUE, type="phylogram", main = "EG1 phylogram")
+plot(tree_phylomatic_EG2, no.margin = TRUE, type="phylogram", main = "EG2 phylogram")
+plot(tree_phylomatic_EG1, no.margin = TRUE, type="radial", main = "EG1 radial")
+plot(tree_phylomatic_EG2, no.margin = TRUE, type="radial", main = "EG2 radial")
+
+# 2. The generated trees were hard to read due to the compactness of the labels. However, a clear differnce between the two trees was the length of the branches: EG1 was uniform, whereas EG2 variable and specfic. EG1 was newick for branching order, whereas EG2 included time. This difference in information altered the branch lengths in EG2 to represent the ages of the lineages and nodes. 
+
+# 3. Further, there were some species exluded from the trees (26 for EG1 and 30 for EG2). It seems that the species left out were not angiosperms and thus not recognized by the database (which only holds data for angiosperms). As a result, there was nothing in the stored tree dataset by which it could be compared. It seems that the output, often "NA/genus/genus" indicates that there is somethign missung from the first data set - as seen in the "NA". However, there are a few insances in EG2 that dont feature an "NA": "pinaceae/abies/abies"; "ceratophyllaceae/ceratophyllum/ceratophyllum". Still, however they were unmatched. In the history of botany, this reveals the emphasis/bias placed on the study of angiosperms wihtin the realm of all plant studies. 
+
+
+```
 
 # FINISHING UP - MICRO-EXERCISES AND A MACRO-EXERCISE
 
@@ -560,5 +685,26 @@ Lastly, be sure to save your R Notebook with appropriate output and commentary.
 
 When your finished with this part of Portfolio 3, you can and should push the notebook and associated exported files back to the appropriate GitHub Repository for Digital Lab 3.  
 
+```{r}
 
+# made plant list and read using "read.csv" command
+PlantList = read.csv("PlantList.txt")
+
+EG<-c(PlantList)
+
+# get tree from Zanne2014
+tree_phylomatic <- phylomatic(taxa = EG, storedtree ="zanne2014", get = 'POST')
+
+# plot
+plot(tree_phylomatic, no.margin = TRUE, type="cladogram")
+plot(tree_phylomatic, no.margin = TRUE, type="fan")
+plot(tree_phylomatic, no.margin = TRUE, type="phylogram")
+plot(tree_phylomatic, no.margin = TRUE, type="unrooted")
+# ** for some reason, the console reads that 39 taxa aren't matched (indicating that the species from my list arent in the Sanne2014 database), but the tree is still generated
+
+
+# save newick file
+newick_emily = "tree_phylomatic_EMILY"
+write.tree(tree_phylomatic, file=newick_emily)
+```
 
